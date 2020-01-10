@@ -420,6 +420,7 @@ text
 const int buttonPin = 10;     // the number of the pushbutton pin
 const int ledPin =  3;      // the number of the LED pin
 const int rotabitSpeed = 100;
+const int letterSpeed = 500;
 
 int buttonState = 0;         // variable for reading the pushbutton status
 int strikes = 0;
@@ -474,11 +475,57 @@ void setNumberInDisplay(int number){
   }
 }
 
-void checkStrikes(int strikes){
-  if(strikes >= 9){
+
+void setMessage(){
+  // Shows a message in the display when the user lost the game
+
+  PORTC=B111000;
+  digitalWrite(11, LOW); // Letra L
+  delay(letterSpeed);
+
+  PORTC=B111111;
+  digitalWrite(11, LOW); // Letra O
+  delay(letterSpeed);
+
+  PORTC=B111111;
+  digitalWrite(11, LOW); // Letra O
+  delay(letterSpeed);
+
+  PORTC=B101101;
+  digitalWrite(11, HIGH); // Letra S
+  delay(letterSpeed);
+
+
+  PORTC=B111001;
+  digitalWrite(11, HIGH); // Letra E
+  delay(letterSpeed);
+
+  PORTC=B110111;
+  digitalWrite(11, HIGH); // Letra R (que seria una A mas bien)
+  delay(letterSpeed);
+}
+
+void turnOffDisplay(){
+    // Apago el display
+    PORTC=B000000;
+    digitalWrite(11, LOW);
+}
+
+void turnOffLeds(){
     PORTD=B00000000; // Se apagan los leds del 0-7
     digitalWrite(8, LOW);
     digitalWrite(9, LOW);
+}
+
+void checkStrikes(int strikes){
+  if(strikes >= 9){
+    turnOffLeds();
+    delay(1000); // delay after number 9
+    turnOffDisplay();
+    delay(1000);
+    setMessage();
+    delay(2000);
+    turnOffDisplay();
     exit(0);
   }
 }
@@ -533,6 +580,5 @@ void loop() {
     checkStrikes(strikes); // Verifica que aun se tenga oportunidades
 
 }
-
 ```
 - Author: `Humberto Israel Perez Rodriguez`
