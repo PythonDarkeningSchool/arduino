@@ -407,4 +407,132 @@ void loop() {
     delay(1000);   // Se apaga el display
 }
 ```
+
+### Programa 3 Juego de Pin Pong
+```
+text
+
+/* Notes: ROTABIT
+ *  0 == INPUT
+ *  1 == OUTPUT
+ */
+
+const int buttonPin = 10;     // the number of the pushbutton pin
+const int ledPin =  3;      // the number of the LED pin
+const int rotabitSpeed = 100;
+
+int buttonState = 0;         // variable for reading the pushbutton status
+int strikes = 0;
+
+void setup() {
+  Serial.begin(9600);
+  // Declarar puertos
+  DDRD=B11111100; // (PORTS from 1 to 7)
+  DDRB=B111011; // (PORTS from 8 to 13) se declaran como OUTPUT 12 & 13 a pesar que no se vallan a usar (para proteccion) | puerto 11 es G en display
+  DDRC=B111111; // (ANALOGIC PORTS from A0 to A5) == USED FOR DISPLAY == | A0 = A on display an so on |
+}
+
+
+void setNumberInDisplay(int number){
+  switch (number) {
+    case 1:
+      PORTC=B000110;
+      digitalWrite(11, LOW);
+      break;
+    case 2:
+      PORTC=B011011;
+      digitalWrite(11, HIGH);
+      break;
+    case 3:
+      PORTC=B001111;
+      digitalWrite(11, HIGH);
+      break;
+    case 4:
+      PORTC=B100110;
+      digitalWrite(11, HIGH);
+      break;
+    case 5:
+      PORTC=B101101;
+      digitalWrite(11, HIGH);
+      break;
+    case 6:
+      PORTC=B111101;
+      digitalWrite(11, HIGH);
+      break;      
+    case 7:
+      PORTC=B000111;
+      digitalWrite(11, HIGH);
+      break;
+    case 8:
+      PORTC=B111111;
+      digitalWrite(11, HIGH);
+      break;
+    case 9:
+      PORTC=B100111;
+      digitalWrite(11, HIGH);
+      break;
+  }
+}
+
+void checkStrikes(int strikes){
+  if(strikes >= 9){
+    PORTD=B00000000; // Se apagan los leds del 0-7
+    digitalWrite(8, LOW);
+    digitalWrite(9, LOW);
+    exit(0);
+  }
+}
+
+void verifyStrike(byte iteration, byte pin){
+    // read the state constantly on every iteration of the pushbutton value
+    buttonState = digitalRead(buttonPin);
+
+    if(iteration == pin){ // Checar el ultimo led encendido
+      if (buttonState == LOW) { // Si el push button NO es presionado
+        strikes++;
+        setNumberInDisplay(strikes);
+      }
+    }
+}
+
+void loop() {
+
+  // ==== PIN PONG ====
+
+    //int strikes = 0;
+
+    for(byte iteration=0; iteration<=9; iteration++){ // Main loop
+
+      for(byte i=2; i<=9; i++){ // ROTABIT DE DERECHA A IZQUIERDA
+
+        // Instrucciones para prender los leds
+        digitalWrite(i-1, LOW);
+        digitalWrite(i, HIGH);
+        digitalWrite(i+1, HIGH);
+
+        verifyStrike(i, 9); // 9 es el ultimo pin de izquierda a derecha    
+        delay(rotabitSpeed);
+      }
+
+      checkStrikes(strikes); // Verifica que aun se tenga oportunidades
+
+      for(byte i=9; i>=2; i--){ // ROTABIT DE IZQUIERDA A DERECHA
+        // Instrucciones para prender los leds
+        digitalWrite(i+1, LOW);
+        digitalWrite(i, HIGH);
+        digitalWrite(i-1, HIGH);
+
+        verifyStrike(i, 2); // 2 es el primer pin de derecha a izquierda
+        delay(rotabitSpeed);
+      }
+
+      checkStrikes(strikes); // Verifica que aun se tenga oportunidades
+
+    }
+
+    checkStrikes(strikes); // Verifica que aun se tenga oportunidades
+
+}
+
+```
 - Author: `Humberto Israel Perez Rodriguez`
