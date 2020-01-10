@@ -37,17 +37,17 @@ void setup() {
 }
 
 void loop() {
-  
+
   // cross code
-  
+
   for(int i=0; i< 4; i++)
   {
     digitalWrite(group_1_normal[i], HIGH);
     delay(timer_each_led);
   }
-  
+
   delay(timer_after_for);
-  
+
     for(int i=0; i< 4; i++)
   {
     digitalWrite(group_2_normal[i], HIGH);
@@ -55,15 +55,15 @@ void loop() {
   }
 
   delay(timer_after_for);
-  
+
     for(int i=0; i< 4; i++)
   {
     digitalWrite(group_1_inverted[i], LOW);
     delay(timer_each_led);
   }
-  
+
   delay(timer_after_for);
-  
+
     for(int i=0; i< 4; i++)
   {
     digitalWrite(group_2_inverted[i], LOW);
@@ -82,7 +82,7 @@ void loop() {
   }
 
   delay(timer_after_for);
-  
+
     for(int i=0; i< 4; i++)
   {
     digitalWrite(face_3[i], HIGH);
@@ -90,7 +90,7 @@ void loop() {
   }
 
   delay(timer_after_for);
-  
+
     for(int i=0; i< 4; i++)
   {
     digitalWrite(face_2[i], HIGH);
@@ -98,7 +98,7 @@ void loop() {
   }
 
   delay(timer_after_for);
-  
+
     for(int i=0; i< 4; i++)
   {
     digitalWrite(face_4[i], HIGH);
@@ -117,7 +117,7 @@ void loop() {
 
   // the last delay for the main loop
   delay(100);
-  
+
 }
 ```
 
@@ -164,7 +164,7 @@ void loop() {
   }
 
   delay(timer_after_for);
-  
+
   // code for the middle 1
     for(int i=0; i< 4; i++)
   {
@@ -173,7 +173,7 @@ void loop() {
   }
 
   delay(timer_after_for);
-  
+
     for(int i=0; i< 4; i++)
   {
     digitalWrite(center_2[i], HIGH);
@@ -181,7 +181,7 @@ void loop() {
   }
 
   delay(timer_after_for);
-  
+
     for(int i=0; i< 8; i++)
   {
     digitalWrite(group_center_1[i], LOW);
@@ -197,7 +197,7 @@ void loop() {
   }
 
   delay(timer_after_for);
-  
+
     for(int i=0; i< 4; i++)
   {
     digitalWrite(center_4[i], HIGH);
@@ -205,7 +205,7 @@ void loop() {
   }
 
   delay(timer_after_for);
-  
+
     for(int i=0; i< 8; i++)
   {
     digitalWrite(group_center_2[i], LOW);
@@ -222,7 +222,7 @@ void loop() {
   }
 
   delay(timer_after_for);
-  
+
     for(int i=0; i< 4; i++)
   {
     digitalWrite(center_5[i], LOW);
@@ -241,8 +241,110 @@ void loop() {
 
   // the last delay for the main loop
   delay(1000);
-  
+
 }
 ```
 
+
+## Combinaciones de Leds (Sistemas Digitales 3)
+### Programa 1
+```text
+/* Notes: ROTABIT
+ *  0 == INPUT
+ *  1 == OUTPUT
+ */
+
+// PORTS DECLARATIONS
+byte PUERTO_10, PUERTO_11;
+
+void setup() {
+  Serial.begin(9600);
+  // Declarar puertos
+  DDRD=B11111100; // (PORTS from 1 to 7)
+  DDRB=B111011; // (PORTS from 8 to 13) se declaran como OUTPUT 12 & 13 a pesar que no se vallan a usar (para proteccion)
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  puerto10 = digitalRead(10); // PIN 10 (DIP SWITCH)
+  puerto11 = digitalRead(11); // PIN 11 (DIP SWITCH)
+
+
+  // ==== PRIMERA COMBINACION ====
+  if(PUERTO_10 == 0 && PUERTO_11 == 0){
+    PORTD=B11111100; // se prenden los leds del 2-7
+    PORTB=B110011; // se prenden los leds del 8-9
+    delay(200);
+  }
+
+
+  // ==== SEGUNDA COMBINACION ====
+  if(PUERTO_10 == 1 && PUERTO_11 == 1){ // (ROTABIT)
+    PORTD=B00000000; // se apagan los leds del 2-7
+    PORTB=B000000; // se apagan los leds del 8-9
+    delay(200);
+
+    for(byte i=2; i<10; i++){
+      digitalWrite(i-1, LOW);
+      digitalWrite(i, HIGH);
+      digitalWrite(i+1, HIGH);
+      delay(100);
+    }
+
+    for(byte i=10; i>=2; i--){
+      digitalWrite(i+1, LOW);
+      digitalWrite(i, HIGH);
+      digitalWrite(i-1, HIGH);
+      delay(100);
+    }
+  }
+
+
+  // ==== TERCERA COMBINACION ====
+  if(PUERTO_10 == 1 && PUERTO_11 == 0){
+    PORTD=B00000000; // se apagan los leds del 2-7
+    PORTB=B110000; // se apagan los leds del 8-9
+    delay(200);
+
+    for(byte port=2; port<10; port++){
+
+      int a=0;
+
+      for(byte i=1; i<=port; i++){
+          if(port%i==0) // si num1 módulo de i es 0, incrementamos a en 1.
+          a++;
+      }
+
+      if(a>2){
+        digitalWrite(port, HIGH); // PRENDER NUMEROS COMPUESTOS
+        delay(200);
+      }
+
+    }
+  }
+
+  // ==== CUARTA COMBINACION ====
+  if(PUERTO_10 == 0 && PUERTO_1 == 1){ // dip switch prendido
+    PORTD=B00000000; // se apagan los leds del 2-7
+    PORTB=B000000; // se apagan los leds del 8-9
+    delay(200);
+
+    for(byte port=2; port<10; port++){
+
+      int a=0;
+
+      for(byte i=1;i<=port;i++){
+          if(port%i==0) // si num1 módulo de i es 0, incrementamos a en 1.
+          a++;
+      }
+
+      if(a==2){
+        digitalWrite(port, HIGH); // PRENDER NUMEROS PRIMOS
+        delay(200);
+      }
+
+    }
+  }
+}
+```
 - Author: `Humberto Israel Perez Rodriguez`
