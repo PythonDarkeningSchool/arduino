@@ -247,7 +247,7 @@ void loop() {
 
 
 ## Combinaciones de Leds (Sistemas Digitales 3)
-### Programa 1
+### Programa 1 ROTABIT
 ```text
 /* Notes: ROTABIT
  *  0 == INPUT
@@ -345,6 +345,66 @@ void loop() {
 
     }
   }
+}
+```
+
+### Programa 2 Palabras en display de 7 segmentos
+```
+text
+/* Notes: ROTABIT
+ *  0 == INPUT
+ *  1 == OUTPUT
+ */
+
+
+void setup() {
+  Serial.begin(9600);
+  // Declarar puertos
+  DDRD=B11111100; // (PORTS from 1 to 7)
+  DDRB=B111111; // (PORTS from 8 to 13)
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+    PORTD=B11011000;
+    PORTB=B000001;
+    delay(500); // Letra H
+
+    PORTD=B11111100;
+    PORTB=B000000;
+    delay(500);   // Letra O  
+
+
+    PORTD=B11100000;
+    PORTB=B000000;
+    delay(500);   // Letra L
+
+
+    PORTD=B11011100;
+    PORTB=B000001;
+    delay(500);   // Letra A
+
+
+    PORTD=B11110000;
+    PORTB=B000001;
+    delay(500);   // Letra B
+
+    PORTD=B11100100;
+    PORTB=B000001;
+    delay(500);   // Letra E
+
+    PORTD=B11110000;
+    PORTB=B000001;
+    delay(500);   // Letra B
+
+    PORTD=B11100100;
+    PORTB=B000001;
+    delay(500);   // Letra E
+
+    PORTD=B00000000;
+    PORTB=B0000010;
+    delay(1000);   // Se apaga el display
 }
 ```
 - Author: `Humberto Israel Perez Rodriguez`
