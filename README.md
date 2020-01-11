@@ -247,7 +247,7 @@ void loop() {
 
 
 ## Combinaciones de Leds (Sistemas Digitales 3)
-### Programa 1 ROTABIT
+### Programa 1 (4 Combinaciones)
 ```text
 /* Notes: ROTABIT
  *  0 == INPUT
@@ -266,8 +266,8 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  puerto10 = digitalRead(10); // PIN 10 (DIP SWITCH)
-  puerto11 = digitalRead(11); // PIN 11 (DIP SWITCH)
+  PUERTO_10 = digitalRead(10); // PIN 10 (DIP SWITCH)
+  PUERTO_11 = digitalRead(11); // PIN 11 (DIP SWITCH)
 
 
   // ==== PRIMERA COMBINACION ====
@@ -324,7 +324,7 @@ void loop() {
   }
 
   // ==== CUARTA COMBINACION ====
-  if(PUERTO_10 == 0 && PUERTO_1 == 1){ // dip switch prendido
+  if(PUERTO_10 == 0 && PUERTO_11 == 1){ // dip switch prendido
     PORTD=B00000000; // se apagan los leds del 2-7
     PORTB=B000000; // se apagan los leds del 8-9
     delay(200);
