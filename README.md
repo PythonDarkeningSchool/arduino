@@ -348,7 +348,7 @@ void loop() {
 }
 ```
 
-### Programa 2 Palabras en display de 7 segmentos
+### Programa 2 (ABECEDARIO en display de 7 segmentos)
 ```
 text
 /* Notes: ROTABIT
@@ -367,40 +367,89 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
-    PORTD=B11011000;
-    PORTB=B000001;
-    delay(500); // Letra H
-
-    PORTD=B11111100;
-    PORTB=B000000;
-    delay(500);   // Letra O  
-
-
-    PORTD=B11100000;
-    PORTB=B000000;
-    delay(500);   // Letra L
-
-
     PORTD=B11011100;
-    PORTB=B000001;
+    digitalWrite(8, HIGH);
     delay(500);   // Letra A
 
-
     PORTD=B11110000;
-    PORTB=B000001;
+    digitalWrite(8, HIGH);
     delay(500);   // Letra B
 
     PORTD=B11100100;
-    PORTB=B000001;
-    delay(500);   // Letra E
+    digitalWrite(8, LOW);
+    delay(500);   // Letra C
 
-    PORTD=B11110000;
-    PORTB=B000001;
-    delay(500);   // Letra B
+    PORTD=B01111000;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra D
 
     PORTD=B11100100;
-    PORTB=B000001;
+    digitalWrite(8, HIGH);
     delay(500);   // Letra E
+
+    PORTD=B11000100;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra F
+
+    PORTD=B11110100;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra G
+
+    PORTD=B11011000;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra H
+
+    PORTD=B00011000;
+    digitalWrite(8, LOW);
+    delay(500);   // Letra I
+
+    PORTD=B00111000;
+    digitalWrite(8, LOW);
+    delay(500);   // Letra J
+
+    PORTD=B11100000;
+    digitalWrite(8, LOW);
+    delay(500);   // Letra L
+
+    PORTD=B01010000;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra N
+
+    PORTD=B01010100;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra Ñ
+
+    PORTD=B11111100;
+    digitalWrite(8, LOW);
+    delay(500);   // Letra O
+
+    PORTD=B11001100;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra P
+
+    PORTD=B10011100;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra Q
+
+    PORTD=B01000000;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra R
+
+    PORTD=B10110100;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra S
+
+    PORTD=B11000000;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra T
+
+    PORTD=B11111000;
+    digitalWrite(8, LOW);
+    delay(500);   // Letra U
+
+    PORTD=B01101100;
+    digitalWrite(8, HIGH);
+    delay(500);   // Letra Z
 
     PORTD=B00000000;
     PORTB=B0000010;
