@@ -630,4 +630,447 @@ void loop() {
 
 }
 ```
+
+### Programa 4 Led RGB
+```
+/* LED RGB
+ *
+ * 1 fase: el led tiene que apagarse para cambiar de color
+ * 2 fase: el led no se tiene que apagar para cambiar de color
+ *
+ * Notas:
+ * 1. Cada pin tiene 8 bits y en hexadecimal son 256
+ * 2. Los colores son: rojo / verde / azul / amarillo / morado / azul cielo / blanco
+ * 3. Las combinaciones de colores son:
+ *  3.1 Amarillo = rojo + verde
+ *  3.2 Morado = rojo + azul
+ *  3.3 Azul cielo = azul + verde
+ *  3.4 Blanco = todos
+ * 4. 0 == INPUT
+ * 5. 1 == OUTPUT
+*/
+
+// SWITCH PORTS DECLARATION
+byte SWITCH_PUERTO_8;
+
+byte RED_PIN=9;
+byte GREEN_PIN=10;
+byte BLUE_PIN=11;
+
+void setup() {
+  Serial.begin(9600);
+  // PORTS 9,10 & 11 as OUTPUTS for RGB, PORT 8 for the switch as INPUT
+  DDRD=B001110;
+  //RGB_color(0, 0, 0); // start with the led in off state
+}
+
+void loop() {
+
+  SWITCH_PUERTO_8 = digitalRead(8); // PIN 8 TO DIP SWITCH
+
+  Serial.print("SWITCH_PUERTO_8: " + SWITCH_PUERTO_8);
+
+  if(SWITCH_PUERTO_8 == HIGH) {
+    Serial.print("HIGH\n");
+
+    int smoothDelay = 10;
+    RGB_color(0, 255, 255); // Red
+
+    for(int x=255; x>=0; x--){ // decrement
+      RGB_color(0, x, 255); // Yellow  
+      delay(smoothDelay);
+    }
+
+    for(int x=0; x<=255; x++){ // increment
+      RGB_color(x, 0, 255); // Green
+      delay(smoothDelay);
+    }
+
+    for(int x=255; x>=0; x--){ // decrement
+      RGB_color(255, 0, x); // Cyan  
+      delay(smoothDelay);
+    }
+
+    for(int x=0; x<=255; x++){ // increment
+      RGB_color(255, x, 0); // Blue
+      delay(smoothDelay);
+    }
+
+    for(int x=255; x>=0; x--){ // decrement
+      RGB_color(x, 255, 0); // Magenta  
+      delay(smoothDelay);
+    }
+
+
+  }
+  else {
+
+    int smoothDelay = 10;
+
+    // RED
+    for(int x=255; x>=0;x--){
+      analogWrite(RED_PIN,x);
+      delay(smoothDelay);
+    }
+
+    for(int x=0; x<=255; x++) {
+      analogWrite(RED_PIN,x);
+      delay(smoothDelay);
+    }
+
+    // GREEN
+    for(int x=255; x>=0;x--){
+      analogWrite(GREEN_PIN,x);
+      delay(smoothDelay);
+    }
+
+    for(int x=0; x<=255; x++) {
+      analogWrite(GREEN_PIN,x);
+      delay(smoothDelay);
+    }
+
+    // BLUE
+    for(int x=255; x>=0;x--){
+      analogWrite(BLUE_PIN,x);       
+      delay(smoothDelay);
+    }
+
+    for(int x=0; x<=255; x++) {
+      analogWrite(BLUE_PIN,x);
+      delay(smoothDelay);
+    }
+
+    // YELLOW(RED & GREEN)
+    for(int x=255; x>=0;x--){
+      analogWrite(RED_PIN,x);
+      analogWrite(GREEN_PIN,x);
+      delay(smoothDelay);
+    }
+
+    for(int x=0; x<=255; x++) {
+      analogWrite(RED_PIN,x);
+      analogWrite(GREEN_PIN,x);
+      delay(smoothDelay);
+    }
+
+    // MAGENTA (RED & BLUE)
+    for(int x=255; x>=0;x--){
+      analogWrite(RED_PIN,x);
+      analogWrite(BLUE_PIN,x);   
+      delay(smoothDelay);
+    }
+
+    for(int x=0; x<=255; x++) {
+      analogWrite(RED_PIN,x);
+      analogWrite(BLUE_PIN,x);
+      delay(smoothDelay);
+    }
+
+    // WHITE (RED, BLUE & GREEN)
+    for(int x=255; x>=0;x--){
+      analogWrite(GREEN_PIN,x);
+      analogWrite(RED_PIN,x);
+      analogWrite(BLUE_PIN,x);   
+      delay(smoothDelay);
+    }
+
+    for(int x=0; x<=255; x++) {
+      analogWrite(GREEN_PIN,x);
+      analogWrite(RED_PIN,x);  
+      analogWrite(BLUE_PIN,x);
+      delay(smoothDelay);
+   }
+
+  }
+
+  delay(1000);
+
+}
+
+
+
+void RGB_color(int red_light_value, int green_light_value, int blue_light_value)
+ {
+  analogWrite(RED_PIN, red_light_value);
+  analogWrite(GREEN_PIN, green_light_value);
+  analogWrite(BLUE_PIN, blue_light_value);
+}
+```
+
+### Programa 5 Sistema De Climatizacion con LM35
+```
+/* Sistema De Climatizacion con LM35
+
+Variables:
+1. dos variables tipo float
+  1.1 - la primera para medir el sensor de temperatura (puerto A0 del arduino)
+  1.2 - la segunda para calcular la formula de la temperatura en grados celcious
+
+
+Valores de la Temperatura:
+
+Azul: temperatura normal
+Verde: aumento de temperatura
+Rojo: temperatura alta
+
+Cuando la temperatura incrementa
+- 29 grados = led RGB en azul
+- de 30 a 34 grados = led RGB en verde
+- 35 grados = led RGB en rojo
+
+Cuando la temperatura decrementa
+- de 35 a 29 grados = se pasa de rojo a azul
+
+ *  0 == INPUT
+ *  1 == OUTPUT
+
+*/
+
+byte RED_PIN=9;
+byte GREEN_PIN=10;
+byte BLUE_PIN=11;
+float SENSOR, TEMPERATURA;
+int smoothDelay = 3;
+int redFlag = 0;
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  //pinMode(A0, INPUT);
+  //DDRC=B000000;
+
+}
+
+void turnOffRGB(int color){
+  switch(color){
+    case 1: // RED
+      // RGB de Anodo Comun se apaga con 1 = 255
+      Serial.print("\nturnOffRGB RED\n");
+      analogWrite(RED_PIN, 255);
+      break;
+     case 2: // GREEN
+      Serial.print("\nturnOffRGB GREEN\n");
+      analogWrite(GREEN_PIN, 255);
+      break;
+     case 3: // BLUE
+      Serial.print("\nturnOffRGB BLUE\n");
+      analogWrite(BLUE_PIN, 255);
+      break;
+  }
+}
+
+void setRBGColor(int color){
+  switch(color){
+    case 1: // RED
+      // RGB de Anodo Comun se prende con 1 = 255
+      Serial.print("\nsetRBGColor RED\n");
+      // Se necesitan mandar los 3 para un solo pin
+      analogWrite(RED_PIN, 255);
+      analogWrite(RED_PIN, 0);
+      analogWrite(RED_PIN, 0);
+      break;
+     case 2: // GREEN
+      Serial.print("\nsetRBGColor GREEN\n");
+      // Se necesitan mandar los 3 para un solo pin
+      analogWrite(GREEN_PIN, 255);
+      analogWrite(GREEN_PIN, 0);
+      analogWrite(GREEN_PIN, 0);
+      break;
+     case 3: // BLUE
+      Serial.print("\nsetRBGColor BLUE\n");
+      // Se necesitan mandar los 3 para un solo pin
+      analogWrite(BLUE_PIN, 255);
+      analogWrite(BLUE_PIN, 0);
+      analogWrite(BLUE_PIN, 0);
+      break;
+  }
+}
+
+void loop() {
+  // put your main code here, to run repeatedly
+  TEMPERATURA = analogRead(A0); // value from 0 a 1023
+  TEMPERATURA = (5.0 * TEMPERATURA * 100.0)/1024.0; // Se calcula la temperatura
+  Serial.print(TEMPERATURA);
+  Serial.print("\n");
+
+
+  if(TEMPERATURA < 30){
+    Serial.print("condition 1: \n");
+    redFlag = false;
+    Serial.print(TEMPERATURA);
+    turnOffRGB(1); // TURN OFF RED
+    delay(500);
+    turnOffRGB(2); // TURN OFF GREEN
+    delay(500);
+    setRBGColor(3); // TURN ON BLUE
+    delay(500);
+  }
+  //if(redFlag == 0 && TEMPERATURA > 30 && TEMPERATURA < 32){
+  if(redFlag == 0 && TEMPERATURA >= 30 && TEMPERATURA <=34){
+    Serial.print("==============>>>>>>>>>>redFlag: ");
+    Serial.print(redFlag);
+    Serial.print("condition 2: \n");
+    Serial.print(TEMPERATURA);
+    turnOffRGB(1); // TURN OFF RED
+    delay(500);    
+    turnOffRGB(3); // TURN OFF BLUE
+    delay(500);
+    setRBGColor(2); // TURN ON GREEN
+    delay(500);
+  }
+  //if(TEMPERATURA >=32){
+  if(TEMPERATURA > 35){
+    Serial.print("condition 3: \n");
+    redFlag = 1;
+    Serial.print(TEMPERATURA);
+    turnOffRGB(2); // TURN OFF GREEN
+    delay(500);
+    turnOffRGB(3); // TURN OFF BLUE
+    delay(500);
+    setRBGColor(1); // TURN ON RED
+    delay(500);
+  }
+
+
+
+}
+```
+
+### Programa 6 Arduino + RGB + Bluetooth
+```
+
+char Incoming_value = 0;
+byte RED_PIN=9;
+byte GREEN_PIN=10;
+byte BLUE_PIN=11;
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  pinMode(13, OUTPUT);
+
+}
+
+void turnOffRGB(int color){
+  switch(color){
+    case 1: // RED
+      // RGB de Anodo Comun se apaga con 1 = 255
+      analogWrite(RED_PIN, 255);
+      break;
+     case 2: // GREEN
+      analogWrite(GREEN_PIN, 255);
+      break;
+     case 3: // BLUE
+      analogWrite(BLUE_PIN, 255);
+      break;
+  }
+}
+
+void setRBGColor(int color){
+  switch(color){
+    case 1: // RED
+      // RGB de Anodo Comun se prende con 1 = 255
+      // Se necesitan mandar los 3 para un solo pin
+      analogWrite(RED_PIN, 255);
+      analogWrite(RED_PIN, 0);
+      analogWrite(RED_PIN, 0);
+      break;
+     case 2: // GREEN
+      // Se necesitan mandar los 3 para un solo pin
+      analogWrite(GREEN_PIN, 255);
+      analogWrite(GREEN_PIN, 0);
+      analogWrite(GREEN_PIN, 0);
+      break;
+     case 3: // BLUE
+      // Se necesitan mandar los 3 para un solo pin
+      analogWrite(BLUE_PIN, 255);
+      analogWrite(BLUE_PIN, 0);
+      analogWrite(BLUE_PIN, 0);
+      break;
+  }
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+  if(Serial.available() > 0)  
+  {
+    Incoming_value = Serial.read();      //Read the incoming data and store it into variable Incoming_value
+    Serial.print(Incoming_value);        //Print Value of Incoming_value in Serial monitor
+    Serial.print("\n");        //New line
+    if(Incoming_value == '1')            //Checks whether value of Incoming_value is equal to 1
+      digitalWrite(13, HIGH);  //If value is 1 then LED turns ON
+    else if(Incoming_value == '0')       //Checks whether value of Incoming_value is equal to 0
+      digitalWrite(13, LOW);   //If value is 0 then LED turns OFF
+
+    switch(Incoming_value){
+      case 'r':
+        // red
+        turnOffRGB(3); // TURN OFF BLUE
+        turnOffRGB(2); // TURN OFF GREEN
+        turnOffRGB(1); // TURN OFF RED **
+        setRBGColor(1); // TURN ON GREEN
+      break;
+      case 'g':
+        // green
+        turnOffRGB(1); // TURN OFF RED
+        turnOffRGB(2); // TURN OFF GREEN **
+        turnOffRGB(3); // TURN OFF BLUE
+        setRBGColor(2); // TURN ON GREEN
+      break;
+      case 'b':
+        // blue
+        turnOffRGB(1); // TURN OFF RED
+        turnOffRGB(2); // TURN OFF GREEN
+        turnOffRGB(3); // TURN OFF GREEN **
+        setRBGColor(3); // TURN ON BLUE
+      break;
+      case 'y':
+        // yellow
+        turnOffRGB(1); // TURN OFF RED
+        turnOffRGB(2); // TURN OFF GREEN
+        turnOffRGB(3); // TURN OFF GREEN **
+        setRBGColor(1); // TURN ON RED
+        setRBGColor(2); // TURN ON GREEN
+      break;
+      case 'p':
+        // purple
+        turnOffRGB(1); // TURN OFF RED
+        turnOffRGB(2); // TURN OFF GREEN
+        turnOffRGB(3); // TURN OFF GREEN **
+        setRBGColor(1); // TURN ON RED
+        setRBGColor(3); // TURN ON BLUE
+      break;
+      case 'c':
+        // cyan
+        turnOffRGB(1); // TURN OFF RED
+        turnOffRGB(2); // TURN OFF GREEN
+        turnOffRGB(3); // TURN OFF GREEN **
+        setRBGColor(2); // TURN ON GREEN
+        setRBGColor(3); // TURN ON BLUE
+      break;
+      case 'w':
+        // white
+        turnOffRGB(1); // TURN OFF RED
+        turnOffRGB(2); // TURN OFF GREEN
+        turnOffRGB(3); // TURN OFF GREEN **
+        setRBGColor(1); // TURN ON RED
+        setRBGColor(2); // TURN ON GREEN
+        setRBGColor(3); // TURN ON BLUE
+
+      break;
+      case 'n':
+        // turn off
+        turnOffRGB(1); // TURN OFF RED
+        turnOffRGB(2); // TURN OFF GREEN
+        turnOffRGB(3); // TURN OFF GREEN **
+      break;
+    }
+  }
+
+
+
+}
+```
+
 - Author: `Humberto Israel Perez Rodriguez`
